@@ -64,7 +64,7 @@ export default function CategoryPage() {
     .join(" ");
 
   return (
-    <div className="flex max-w-screen-xl mx-auto">
+    <div className="flex max-w-screen-xl mx-auto py-4">
       <Sidebar />
       <main className="flex-1 p-4">
         <div className="flex items-start flex-col-reverse md:flex-row md:items-center justify-between gap-4 mb-4">
