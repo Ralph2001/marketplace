@@ -162,8 +162,19 @@ export default function ItemDetailPage() {
     }
   };
 
+  function getRelativeTime(date: string | Date) {
+    const now = new Date();
+    const past = new Date(date);
+    const diff = Math.floor((now.getTime() - past.getTime()) / 1000); // in seconds
+
+    if (diff < 60) return `Listed ${diff} seconds ago`;
+    if (diff < 3600) return `Listed ${Math.floor(diff / 60)} minutes ago`;
+    if (diff < 86400) return `Listed ${Math.floor(diff / 3600)} hours ago`;
+    return `Listed ${Math.floor(diff / 86400)} days ago`;
+  }
+
   return (
-    <div className="max-w-screen-2xl mx-auto px-8  max-h-screen flex flex-col gap-2">
+    <div className="max-w-screen-2xl mx-auto px-8  flex flex-col gap-2 py-4 h-full">
       {/* <div className="h-10">
         <Link
           href="/"
@@ -195,7 +206,7 @@ export default function ItemDetailPage() {
 
           {/* Meta Info */}
           <div className="text-sm text-gray-500 space-y-1">
-            <p>Listed on {new Date(listing.created_at).toLocaleDateString()}</p>
+            <p>{getRelativeTime(listing.created_at)}</p>
             <p>{listing.location}</p>
           </div>
 

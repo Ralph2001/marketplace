@@ -23,7 +23,7 @@ export default function ImagePreviewGallery({ imageUrls }: Props) {
   return (
     <div className="w-full md:w-[70%] h-full border rounded-2xl overflow-hidden flex flex-col bg-black">
       {/* Main Preview Image with Blurred Background */}
-      <div className="relative flex-1 min-h-[400px]">
+      <div className="relative flex-1 min-h-[400px] max-h-[50rem]">
         {selectedImage && (
           <>
             {/* Blurred Background */}
