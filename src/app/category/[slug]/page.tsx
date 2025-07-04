@@ -1,13 +1,14 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import Sidebar from "@/components/layout/sidebar";
-import { useAuth } from "../../context/AuthContext"; 
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { MapPin } from "lucide-react";
+import slugify from "slugify";
 import Link from "next/link";
 import useSWRInfinite from "swr/infinite";
+import { useState, useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 type Listing = {
   public_id: number;
@@ -21,77 +22,82 @@ type Listing = {
   image_urls?: string;
 };
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 40;
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-export default function DashboardPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
+export default function CategoryPage() {
+  const { slug } = useParams();
+  const slugStr = Array.isArray(slug) ? slug[0] : slug;
+  const [search, setSearch] = useState("");
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
-  }, [user, loading]);
-
-  const getKey = (pageIndex: number, previousData: Listing[]) => {
-    if (previousData && previousData.length === 0) return null;
-    return `/api/listings?page=${pageIndex + 1}&limit=${PAGE_SIZE}&search=${encodeURIComponent(searchTerm)}`;
+  const getKey = (pageIndex: number, previousPageData: Listing[]) => {
+    if (previousPageData && previousPageData.length === 0) return null;
+    const searchParam = encodeURIComponent(search);
+    return `/api/listings?category=${slugStr}&search=${searchParam}&page=${pageIndex + 1}&limit=${PAGE_SIZE}`;
   };
 
   const { data, size, setSize, isValidating } = useSWRInfinite<Listing[]>(
     getKey,
     fetcher
   );
+
   const listings = data ? ([] as Listing[]).concat(...data) : [];
   const isLoading = !data && isValidating;
 
-  // Observe scrolling into view
+  // Load next page on scroll into view
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) setSize((s) => s + 1);
+        if (entries[0].isIntersecting) setSize((size) => size + 1);
       },
       { threshold: 1 }
     );
     if (loadMoreRef.current) observer.observe(loadMoreRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [loadMoreRef.current]);
 
-  if (loading || !user) return <p className="p-4">Loading...</p>;
+  const readableTitle = slugStr
+    ?.split("-")
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join(" ");
 
   return (
-    <div className="flex max-w-screen-xl mx-auto py-4">
+    <div className="flex max-w-screen-xl mx-auto">
       <Sidebar />
-
       <main className="flex-1 p-4">
-        <div className="flex items-start  w-full md:items-center flex-col-reverse  md:justify-between gap-4 md:gap-4 mb-4">
-          <div className="flex flex-row items-center justify-between w-full">
-            <p className="font-semibold">Today's pick</p>
-            <p className="flex flex-row items-center gap-1 text-sm text-gray-500">
-              <MapPin size={14} className="text-blue-600" />
-              <span className="text-blue-600">Location</span>
-            </p>
-          </div>
+        <div className="flex items-start flex-col-reverse md:flex-row md:items-center justify-between gap-4 mb-4">
+          <h1 className="text-xl font-semibold text-gray-800 capitalize">
+            {readableTitle} Items
+          </h1>
           <div className="w-full max-w-xs ml-auto">
             <Input
-              type="text"
-              placeholder="Search items..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search in category..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="text-sm"
             />
           </div>
         </div>
 
+        <div className="w-full mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium">
+            <span>{readableTitle}</span>
+            <Link
+              href="/"
+              className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-blue-200 transition"
+              aria-label="Clear filter"
+            >
+              <X size={14} />
+            </Link>
+          </div>
+        </div>
+
         {isLoading ? (
-          <p className="text-gray-500 text-sm">Loading listings...</p>
+          <p className="text-sm text-gray-500">Loading items...</p>
         ) : listings.length === 0 ? (
-          <p className="text-gray-500 text-sm">No listings found.</p>
+          <p className="text-sm text-gray-500">No listings in this category.</p>
         ) : (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
@@ -130,6 +136,7 @@ export default function DashboardPage() {
                 </Link>
               ))}
             </div>
+
             <div ref={loadMoreRef} className="h-10" />
             {isValidating && (
               <p className="text-center text-sm mt-4">Loading more...</p>
