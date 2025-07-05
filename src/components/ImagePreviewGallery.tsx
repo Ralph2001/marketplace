@@ -15,15 +15,13 @@ export default function ListingGallery({ imageUrls }: Props) {
   }));
 
   return (
-    <div className="  mx-auto">
-      <ImageGallery
-        items={images}
-        showPlayButton={false}
-        showFullscreenButton={true}
-        showNav={true}
-        showThumbnails={true}
-        additionalClass="rounded-lg overflow-hidden"
-      />
-    </div>
+    <ImageGallery
+      items={images}
+      showPlayButton={false}
+      showFullscreenButton={true}
+      showNav={true}
+      showThumbnails={true}
+      additionalClass="rounded-lg overflow-hidden"
+    />
   );
 }

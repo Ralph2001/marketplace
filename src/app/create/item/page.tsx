@@ -30,6 +30,7 @@ import { compressImage } from "../../../../utils/compressImage";
 import { CATEGORIES } from "../../../../constants/categories";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import ImageGallery from "@/components/ImageGallery";
 
 export default function CreateItemFormPage() {
   const [title, setTitle] = useState("");
@@ -242,18 +243,24 @@ export default function CreateItemFormPage() {
   return (
     <div className="flex max-w-screen-xl mx-auto h-full py-4">
       {/* Sidebar Form */}
-      <aside className=" hidden  md:block fixed  top-0 bottom-0 left-0 w-80 bg-white  shadow-lg p-5 z-50">
+      <aside className="fixed  top-0 bottom-0 left-0 w-full md:w-80 bg-white  shadow-lg p-5 z-50">
         {/* Header */}
-        <div className="flex items-center gap-2 mb-6">
+        <div className="flex items-start gap-2 mb-6">
           <Link
             href="/create"
             className="rounded-full bg-gray-100 hover:bg-gray-200 w-8 h-8 flex items-center justify-center"
           >
             <X size={20} className="text-gray-600" />
           </Link>
-          <span className="text-lg font-semibold text-gray-800">
-            Item for sale
-          </span>
+          <div className="flex flex-col gap-0.5">
+            <span className="text-lg font-semibold text-gray-800">
+              Item for sale
+            </span>
+            <span className="text-xs text-gray-700 truncate flex items-center gap-1">
+              <User size={12} className="shrink-0" />
+              {emailAddress}
+            </span>
+          </div>
         </div>
 
         {/* Form */}
@@ -482,14 +489,14 @@ export default function CreateItemFormPage() {
       </aside>
 
       {/* Main Preview */}
-      <main className="flex-1 md:ml-80  bg-gray-50 h-full">
+      <main className="flex-1 hidden md:block md:ml-80  bg-gray-50 h-full">
         <div className=" mx-auto flex flex-col h-full bg-white border rounded-lg p-4 shadow-sm">
           <h2 className="text-xl font-bold">Preview</h2>
           <div className="flex flex-col md:flex-row gap-4 h-full">
             <div className=" w-full md:w-[600px] max-h-[40rem] h-full border rounded-2xl overflow-hidden flex flex-col">
-              {/* Main Preview Image */}
+             
               <div className="relative flex-1 rounded overflow-hidden cursor-pointer bg-gray-100">
-                {/* Blurred Background */}
+            
                 {selectedImage && (
                   <Image
                     src={selectedImage}
@@ -502,7 +509,7 @@ export default function CreateItemFormPage() {
                   />
                 )}
 
-                {/* Contained Foreground Image */}
+                
                 {selectedImage && (
                   <Image
                     src={selectedImage}
@@ -516,7 +523,7 @@ export default function CreateItemFormPage() {
                 )}
               </div>
 
-              {/* Thumbnails Gallery */}
+  
               {previewUrls.length > 1 && (
                 <div className="mt-2 overflow-x-auto max-w-full hide-scrollbar">
                   <div className="flex gap-2 p-1 w-max snap-x snap-mandatory">
@@ -545,6 +552,8 @@ export default function CreateItemFormPage() {
                 </div>
               )}
             </div>
+
+      
 
             <div className="w-full md:w-80 border flex flex-col rounded-md p-4 h-full bg-white shadow-sm">
               <div className="space-y-4 w-full h-full text-sm text-gray-700">

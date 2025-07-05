@@ -37,13 +37,13 @@ const MobileBar = () => {
       <div className="grid grid-cols-2 gap-2 w-full sm:hidden md:hidden">
         <Link
           href={"/create"}
-          className="items-center w-full gap-2 h-10 active:text-blue-600 hover:text-blue-400 flex justify-center rounded-3xl py-2 hover:bg-gray-300 bg-gray-200 font-bold text-gray-700 active:bg-gray-300 transition-all duration-300"
+          className="items-center w-full gap-2 h-10 active:text-blue-600 hover:text-blue-400 flex justify-center rounded-3xl py-2 hover:bg-gray-300 bg-gray-200 font-medium text-gray-700 active:bg-gray-300 transition-all duration-300"
         >
           <BadgePlus size={14} /> Sell
         </Link>
         <Button
           onClick={() => setShowCategories(true)}
-          className="items-center w-full gap-2 flex h-10 justify-center rounded-3xl py-2 bg-gray-200 font-bold text-gray-700 hover:bg-gray-300 active:bg-gray-300 hover:text-blue-400 transition-all duration-300"
+          className="items-center w-full gap-2 flex h-10 justify-center rounded-3xl py-2 bg-gray-200 font-medium text-gray-700 hover:bg-gray-300 active:bg-gray-300 hover:text-blue-400 transition-all duration-300"
         >
           <List size={14} /> Categories
         </Button>

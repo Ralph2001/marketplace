@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className="h-full flex flex-col bg-gray-50 text-gray-900">
+      <body className="h-full flex flex-col hide-scrollbar bg-gray-50 text-gray-900">
         <AuthProvider>
           <HeaderWrapper />
           <Toaster position="top-right" richColors expand />
