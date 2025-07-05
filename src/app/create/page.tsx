@@ -108,7 +108,9 @@ export default function CreateListingTypePage() {
       </aside>
 
       <main className="flex-1 md:ml-80 p-6 bg-gray-50">
-        <h1 className="text-2xl font-bold mb-6">Choose Listing Type</h1>
+        <h1 className="text-2xl font-bold text-gray-700 mb-6">
+          Choose Listing Type
+        </h1>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {listingOptions.map((option) => (
             <Link
