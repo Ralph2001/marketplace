@@ -13,7 +13,7 @@ export default function Sidebar() {
 
   // Extract current category from pathname
   const activeCategory = pathname.startsWith("/category/")
-    ? pathname.split("/")[2] 
+    ? pathname.split("/")[2]
     : "";
 
   const handleSelect = (category: string) => {
@@ -37,18 +37,19 @@ export default function Sidebar() {
       {/* Categories */}
       <h2 className="text-lg font-semibold mb-3 text-gray-800">Categories</h2>
       <ul className="space-y-1">
-        {CATEGORIES.map((cat) => (
-          <li key={cat}>
+        {CATEGORIES.map(({ name, icon: Icon }) => (
+          <li key={name}>
             <button
-              onClick={() => handleSelect(cat)}
+              onClick={() => handleSelect(name)}
               className={clsx(
-                "w-full text-left px-3 py-2 cursor-pointer rounded hover:bg-blue-100 transition",
-                activeCategory === slugify(cat, { lower: true })
+                "w-full flex items-center gap-2 text-left px-3 py-2 cursor-pointer rounded hover:bg-blue-100 transition",
+                activeCategory === slugify(name, { lower: true })
                   ? "bg-blue-100 text-blue-700 font-medium"
                   : "text-gray-700"
               )}
             >
-              {cat}
+              <Icon size={16} />
+              {name}
             </button>
           </li>
         ))}

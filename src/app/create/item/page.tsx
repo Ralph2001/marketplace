@@ -41,6 +41,14 @@ export default function CreateItemFormPage() {
 
   const [loading, setLoading] = useState(false);
 
+  const [errors, setErrors] = useState<{
+    title?: string;
+    price?: string;
+    category?: string;
+    location?: string;
+    emailAddress?: string;
+  }>({});
+
   const [images, setImages] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -398,9 +406,12 @@ export default function CreateItemFormPage() {
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {CATEGORIES.map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat}
+                  {CATEGORIES.map(({ name, icon: Icon }) => (
+                    <SelectItem key={name} value={name}>
+                      <div className="flex items-center gap-2">
+                        <Icon size={16} className="text-gray-500" />
+                        {name}
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>

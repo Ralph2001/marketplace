@@ -1,27 +1,19 @@
 "use client";
 
 import Sidebar from "@/components/layout/sidebar";
-import { useAuth } from "../../context/AuthContext"; 
+import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { MapPin } from "lucide-react";
-import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useSWRInfinite from "swr/infinite";
-
-type Listing = {
-  public_id: number;
-  title: string;
-  price: number;
-  category: string;
-  description: string;
-  location: string;
-  email_address: string;
-  created_at: string;
-  image_urls?: string;
-};
-
-const PAGE_SIZE = 12;
+import { Listing } from "../../types";
+import { MAX_PAGE_SIZE } from "../../constants/page";
+import Loader from "@/components/ui/loader";
+import ItemCard from "@/components/item/item-card";
+import TopBar from "@/components/dashboard/top-bar";
+import ItemNotFound from "@/components/item/item-not-found";
+import ItemSkeleton from "@/components/item/item-skeleton";
+import { toast } from "sonner";
+import MobileBar from "@/components/dashboard/mobile-bar";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -33,24 +25,37 @@ export default function DashboardPage() {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    const handler = setTimeout(() => {
+      setSize(1);
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
     }
   }, [user, loading]);
 
-  const getKey = (pageIndex: number, previousData: Listing[]) => {
-    if (previousData && previousData.length === 0) return null;
-    return `/api/listings?page=${pageIndex + 1}&limit=${PAGE_SIZE}&search=${encodeURIComponent(searchTerm)}`;
-  };
-
-  const { data, size, setSize, isValidating } = useSWRInfinite<Listing[]>(
-    getKey,
-    fetcher
+  const getKey = useCallback(
+    (pageIndex: number, previousData: Listing[]) => {
+      if (previousData && previousData.length === 0) return null;
+      return `/api/listings?page=${pageIndex + 1}&limit=${MAX_PAGE_SIZE}&search=${encodeURIComponent(searchTerm)}`;
+    },
+    [searchTerm]
   );
+
+  const { data, error, size, setSize, isValidating } = useSWRInfinite<
+    Listing[]
+  >(getKey, fetcher);
+
+  if (error) {
+    toast.error("Failed to load listings. Please try again later.");
+  }
+
   const listings = data ? ([] as Listing[]).concat(...data) : [];
   const isLoading = !data && isValidating;
 
-  // Observe scrolling into view
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -62,78 +67,39 @@ export default function DashboardPage() {
     return () => observer.disconnect();
   }, []);
 
-  if (loading || !user) return <p className="p-4">Loading...</p>;
+  if (loading || !user) return null;
 
   return (
     <div className="flex max-w-screen-xl mx-auto py-4">
-      <Sidebar />
+      {/* Category */}
 
-      <main className="flex-1 p-4">
-        <div className="flex items-start  w-full md:items-center flex-col-reverse  md:justify-between gap-4 md:gap-4 mb-4">
-          <div className="flex flex-row items-center justify-between w-full">
-            <p className="font-semibold">Today's pick</p>
-            <p className="flex flex-row items-center gap-1 text-sm text-gray-500">
-              <MapPin size={14} className="text-blue-600" />
-              <span className="text-blue-600">Location</span>
-            </p>
-          </div>
-          <div className="w-full max-w-xs ml-auto">
-            <Input
-              type="text"
-              placeholder="Search items..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="text-sm"
-            />
-          </div>
-        </div>
+      <Sidebar />
+      <main className="flex-1 flex flex-col gap-4 p-4">
+        <MobileBar />
+        <hr className="md:hidden"/>
+        <TopBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
         {isLoading ? (
-          <p className="text-gray-500 text-sm">Loading listings...</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 transition-opacity duration-500 opacity-100">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <ItemSkeleton key={i} />
+            ))}
+          </div>
         ) : listings.length === 0 ? (
-          <p className="text-gray-500 text-sm">No listings found.</p>
+          searchTerm ? (
+            <ItemNotFound searchTerm={searchTerm} />
+          ) : (
+            <p className="text-gray-500 text-sm">No listings found.</p>
+          )
         ) : (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 transition-opacity duration-500 opacity-100 ">
               {listings.map((item) => (
-                <Link key={item.public_id} href={`/item/${item.public_id}`}>
-                  <div className="bg-white border rounded shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer overflow-hidden">
-                    <div className="relative w-full h-40 bg-gray-100">
-                      {item.image_urls && item.image_urls.length > 0 ? (
-                        <img
-                          src={item.image_urls[0]}
-                          alt={item.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-                          No Image
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-3 text-sm space-y-1">
-                      <p className="font-semibold text-gray-900 truncate">
-                        {item.title}
-                      </p>
-                      <p className="text-blue-600 font-bold">
-                        ₱
-                        {new Intl.NumberFormat("en-PH", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        }).format(Number(item.price))}
-                      </p>
-                      <p className="text-gray-500 text-xs truncate">
-                        {item.location}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
+                <ItemCard key={item.public_id} item={item} />
               ))}
             </div>
             <div ref={loadMoreRef} className="h-10" />
-            {isValidating && (
-              <p className="text-center text-sm mt-4">Loading more...</p>
-            )}
+            {isValidating && <Loader message="Loading more..." />}
           </>
         )}
       </main>

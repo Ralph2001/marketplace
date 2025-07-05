@@ -70,7 +70,7 @@ export default function CreateListingTypePage() {
 
   return (
     <div className="flex max-w-screen-xl mx-auto ">
-      <aside className="fixed top-0 bottom-0 left-0 w-80 bg-white  shadow-lg p-5 z-50">
+      <aside className="hidden md:block fixed top-0 bottom-0 left-0 w-80 bg-white  shadow-lg p-5 z-50">
         {/* Header */}
         <div className="flex items-center gap-2 mb-6">
           <Link
@@ -107,7 +107,7 @@ export default function CreateListingTypePage() {
         </ul>
       </aside>
 
-      <main className="flex-1 ml-80 p-6 bg-gray-50">
+      <main className="flex-1 md:ml-80 p-6 bg-gray-50">
         <h1 className="text-2xl font-bold mb-6">Choose Listing Type</h1>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {listingOptions.map((option) => (

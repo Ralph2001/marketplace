@@ -1,92 +1,97 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "../../../utils/auth";
 import { useAuth } from "../../../context/AuthContext";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/ui/input";
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .email("Invalid email address")
+    .nonempty("Email is required"),
+  password: z.string().nonempty("Password is required"),
+});
 
 export default function LoginPage() {
   const router = useRouter();
   const { user } = useAuth();
 
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+  });
 
   useEffect(() => {
     if (user) router.replace("/");
   }, [user, router]);
 
-  const handleLogin = async () => {
-    setError("");
-    if (!email.trim() || !password.trim()) {
-      setError("Email and password are required.");
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
-    setLoading(true);
+  const onSubmit = async (data: { email: string; password: string }) => {
     try {
-      const { error } = await signIn(email.trim(), password);
+      const { error } = await signIn(data.email.trim(), data.password);
 
       if (error) {
-        setError(error.message || "Login failed. Please try again.");
+        toast.error(error.message || "Login failed. Please try again.");
       } else {
         router.push("/");
       }
     } catch (err) {
       console.error("Unexpected error during login:", err);
-      setError("Something went wrong. Please try again later.");
-    } finally {
-      setLoading(false);
+      toast.error("Something went wrong. Please try again later.");
     }
   };
 
-  const validateEmail = (email: string): boolean => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
-
   return (
-    <div className="h-full border min-h-full flex items-center justify-center bg-blue-50 px-4">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center mb-4">MarketPlace</h1>
+    <div
+      className="h-screen flex items-center justify-center bg-cover p-4 bg-center"
+      style={{ backgroundImage: "url('/path/to/your/background.jpg')" }}
+    >
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
+        <h1 className="text-3xl font-bold text-center mb-6">Log In</h1>
 
-        {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {errors.email && (
+            <p className="text-red-600 text-sm mb-2">{errors.email.message}</p>
+          )}
+          <Input
+            type="email"
+            placeholder="Email"
+            {...register("email")}
+            className={`w-full p-3 mb-4 border ${errors.email ? "border-red-600" : "border-gray-300"} rounded focus:outline-none focus:ring-2 focus:ring-blue-500`}
+          />
 
-        <input
-          className="w-full p-2 mb-3 border border-gray-300 rounded"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="email"
-        />
-        <input
-          className="w-full p-2 mb-3 border border-gray-300 rounded"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="current-password"
-        />
+          {errors.password && (
+            <p className="text-red-600 text-sm mb-2">
+              {errors.password.message}
+            </p>
+          )}
+          <Input
+            type="password"
+            placeholder="Password"
+            {...register("password")}
+            className={`w-full p-3 mb-6 border ${errors.password ? "border-red-600" : "border-gray-300"} rounded focus:outline-none focus:ring-2 focus:ring-blue-500`}
+          />
 
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          className={`w-full py-2 rounded text-white ${
-            loading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
-          }`}
-        >
-          {loading ? "Logging in..." : "Log In"}
-        </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full py-3 rounded text-white ${
+              isSubmitting
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            } transition duration-200`}
+          >
+            {isSubmitting ? "Logging in..." : "Log In"}
+          </button>
+        </form>
 
         <p className="mt-4 text-sm text-center">
           <a href="/signup" className="text-blue-600 underline">

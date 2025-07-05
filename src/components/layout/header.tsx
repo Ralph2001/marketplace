@@ -18,7 +18,16 @@ export default function Header() {
   const [messageNotifications, setMessageNotifications] = useState<any[]>([]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    const session = await supabase.auth.getSession();
+    if (!session.data.session) {
+      console.error("No active session found. Cannot sign out.");
+      return;
+    }
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error.message);
+      return;
+    }
     router.push("/login");
   };
 
