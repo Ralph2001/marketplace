@@ -13,8 +13,10 @@ import {
 } from "lucide-react";
 
 import clsx from "clsx";
-
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { createClient } from "../../../../utils/supabase/client";
+import { toast } from "sonner";
 
 const listingOptions = [
   {
@@ -43,8 +45,6 @@ const listingOptions = [
   },
 ];
 
-// const ListingPages = ["Choose listing type", "Your listings", "Help"];
-
 const ListingPages = [
   {
     title: "Choose listing type",
@@ -62,15 +62,46 @@ const ListingPages = [
     icon: <HelpCircle className="w-4 h-4 mr-2" />,
   },
 ];
+
 export default function CreateListingTypePage() {
+  const router = useRouter();
   const pathname = usePathname();
   const activeSegment = pathname.startsWith("/create/")
     ? pathname.split("/")[2]
     : "";
 
+  const [authChecked, setAuthChecked] = useState(false);
+
+  // ✅ Check if user is logged in
+  useEffect(() => {
+    const supabase = createClient();
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (!data.user) {
+        toast.warning("Please log in to create a listing.");
+        router.replace("/login");
+        return;
+      }
+      setAuthChecked(true);
+    };
+
+    checkAuth();
+  }, []);
+
+  // ✅ Prevent rendering before auth is checked
+  if (!authChecked) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+        <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        <span className="sr-only">Loading...</span>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex max-w-screen-xl mx-auto ">
-      <aside className="hidden md:block fixed top-0 bottom-0 left-0 w-80 bg-white  shadow-lg p-5 z-50">
+    <div className="flex max-w-screen-xl mx-auto">
+      {/* Sidebar */}
+      <aside className="hidden md:block fixed top-0 bottom-0 left-0 w-80 bg-white shadow-lg p-5 z-50">
         {/* Header */}
         <div className="flex items-center gap-2 mb-6">
           <Link
@@ -83,7 +114,9 @@ export default function CreateListingTypePage() {
             Create new listing
           </span>
         </div>
-        <ul className="space-y-1 ">
+
+        {/* Navigation */}
+        <ul className="space-y-1">
           {ListingPages.map((cat) => {
             const segment = cat.link.split("/")[2];
             return (
@@ -107,6 +140,7 @@ export default function CreateListingTypePage() {
         </ul>
       </aside>
 
+      {/* Main Content */}
       <main className="flex-1 md:ml-80 p-6 bg-gray-50">
         <h1 className="text-2xl font-bold text-gray-700 mb-6">
           Choose Listing Type
@@ -116,7 +150,7 @@ export default function CreateListingTypePage() {
             <Link
               key={option.title}
               href={option.href}
-              className="flex  items-center h-56 gap-4 flex-col bg-white border border-gray-200 p-4 rounded-2xl shadow-lg hover:shadow-md hover:bg-gray-50 transition"
+              className="flex items-center h-56 gap-4 flex-col bg-white border border-gray-200 p-4 rounded-2xl shadow-lg hover:shadow-md hover:bg-gray-50 transition"
             >
               <div className="shrink-0 mt-auto mb-auto">
                 <div className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-400">

@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { MessageSellerProps } from "../../../types";
 import { toast } from "sonner";
-import { supabase } from "../../../libs/supabase";
+
 import { BadgeCheck, Check, Loader2, SendHorizontal } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { Input } from "../ui/input";
+import { createClient } from "../../../utils/supabase/client";
 
 export default function MessageSeller({
   listing,
@@ -19,6 +20,8 @@ export default function MessageSeller({
 }: MessageSellerProps) {
   const [message, setMessage] = useState("I'm interested in your item!");
   const [isSending, setIsSending] = useState(false);
+
+  const supabase = createClient();
 
   const handleSendEmail = async () => {
     if (!message.trim()) {
@@ -107,7 +110,7 @@ export default function MessageSeller({
       {hasSentMessage && (
         <Link href="/messages/" passHref>
           <Button className="w-full bg-gray-200 shadow-md hover:bg-gray-300 text-gray-800 text-sm font-medium">
-          See Conversation
+            See Conversation
           </Button>
         </Link>
       )}

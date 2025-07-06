@@ -7,12 +7,12 @@ import Link from "next/link";
 import useSWRInfinite from "swr/infinite";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { X } from "lucide-react";
-import { MAX_PAGE_SIZE } from "../../../../constants/page";
+import { MAX_PAGE_SIZE } from "../../../../../constants/page";
 import Loader from "@/components/ui/loader";
 import ItemCard from "@/components/item/item-card";
 import ItemSkeleton from "@/components/item/item-skeleton";
 import ItemNotFound from "@/components/item/item-not-found";
-import { Listing } from "../../../../types";
+import { Listing } from "../../../../../types";
 import TopBar from "@/components/category/top-bar";
 import CategoryBadge from "@/components/category/category-badge";
 

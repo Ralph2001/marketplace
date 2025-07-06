@@ -1,28 +1,46 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useAuth } from "../../../context/AuthContext";
-import { supabase } from "../../../libs/supabase";
 import { User, Mail, MailCheck, Bell, BellDot } from "lucide-react";
+import { createClient } from "../../../utils/supabase/client";
+
 
 export default function Header() {
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const router = useRouter();
 
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
   const [showNotificationDropdown, setShowNotificationDropdown] =
     useState(false);
   const [hasMessages, setHasMessages] = useState(false);
   const [messageNotifications, setMessageNotifications] = useState<any[]>([]);
 
+  const supabase = createClient();
+
+  useEffect(() => {
+    const getUserAndListen = async () => {
+   
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
+
+
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null);
+      });
+
+      return () => subscription.unsubscribe();
+    };
+
+    getUserAndListen(); 
+  }, []);
+
   const handleLogout = async () => {
-    const session = await supabase.auth.getSession();
-    if (!session.data.session) {
-      console.error("No active session found. Cannot sign out.");
-      return;
-    }
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error("Error signing out:", error.message);
@@ -94,7 +112,6 @@ export default function Header() {
             </Link>
           ) : (
             <>
-              {/* 🔔 Notifications */}
               <div className="relative">
                 <button
                   onClick={() => setShowNotificationDropdown((prev) => !prev)}
@@ -145,7 +162,6 @@ export default function Header() {
                 )}
               </div>
 
-              {/* 📬 Messages */}
               <Link
                 href={`/messages/${user.id}`}
                 className="w-8 h-8 flex items-center justify-center hover:bg-blue-200 rounded-full transition"
@@ -157,7 +173,6 @@ export default function Header() {
                 )}
               </Link>
 
-              {/* 👤 Account Dropdown */}
               <div className="relative">
                 <button
                   onClick={() => setShowAccountDropdown((prev) => !prev)}

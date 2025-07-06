@@ -1,7 +1,6 @@
+
 import type { Metadata } from "next";
 import "./globals.css";
-import { AuthProvider } from "../../context/AuthContext";
-import HeaderWrapper from "@/components/layout/HeaderWrapper";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
@@ -16,12 +15,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className="h-full flex flex-col hide-scrollbar bg-gray-50 text-gray-900">
-        <AuthProvider>
-          <HeaderWrapper />
-          <Toaster position="top-right" richColors expand />
-          <main className="flex-1 ">{children}</main>
-        </AuthProvider>
+      <body className="h-full flex flex-col bg-gray-50 text-gray-900">
+        <Toaster position="top-right" richColors expand />
+        {children}
       </body>
     </html>
   );

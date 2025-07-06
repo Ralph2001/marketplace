@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "../../../../libs/supabase";
 import slugify from "slugify";
+import { createClient } from "../../../../utils/supabase/server";
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "10", 10);
     const offset = (page - 1) * limit;
 
+    const supabase = await createClient()
     const { data, error } = await supabase
         .from("listings")
         .select("*")

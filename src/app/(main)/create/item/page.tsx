@@ -24,13 +24,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { supabase } from "../../../../libs/supabase";
+// import { supabase } from "../../../../libs/supabase";
 import Image from "next/image";
-import { compressImage } from "../../../../utils/compressImage";
-import { CATEGORIES } from "../../../../constants/categories";
+import { compressImage } from "../../../../../utils/compressImage";
+import { CATEGORIES } from "../../../../../constants/categories";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import ImageGallery from "@/components/ImageGallery";
+import { createClient } from "../../../../../utils/supabase/client";
+import { useRequireAuth } from "@/hooks/useRequireAuth";
 
 export default function CreateItemFormPage() {
   const [title, setTitle] = useState("");
@@ -50,6 +51,8 @@ export default function CreateItemFormPage() {
     emailAddress?: string;
   }>({});
 
+  const supabase = createClient();
+
   const [images, setImages] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -60,16 +63,11 @@ export default function CreateItemFormPage() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (data?.user) {
-        setEmailAddress(data.user.email || "");
-      }
-    };
+  const { user, isLoading } = useRequireAuth();
 
-    fetchUser();
-  }, []);
+  if (isLoading || loading) {
+    return null;
+  }
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -494,9 +492,7 @@ export default function CreateItemFormPage() {
           <h2 className="text-xl font-bold">Preview</h2>
           <div className="flex flex-col md:flex-row gap-4 h-full">
             <div className=" w-full md:w-[600px] max-h-[40rem] h-full border rounded-2xl overflow-hidden flex flex-col">
-             
               <div className="relative flex-1 rounded overflow-hidden cursor-pointer bg-gray-100">
-            
                 {selectedImage && (
                   <Image
                     src={selectedImage}
@@ -509,7 +505,6 @@ export default function CreateItemFormPage() {
                   />
                 )}
 
-                
                 {selectedImage && (
                   <Image
                     src={selectedImage}
@@ -523,7 +518,6 @@ export default function CreateItemFormPage() {
                 )}
               </div>
 
-  
               {previewUrls.length > 1 && (
                 <div className="mt-2 overflow-x-auto max-w-full hide-scrollbar">
                   <div className="flex gap-2 p-1 w-max snap-x snap-mandatory">
@@ -552,8 +546,6 @@ export default function CreateItemFormPage() {
                 </div>
               )}
             </div>
-
-      
 
             <div className="w-full md:w-80 border flex flex-col rounded-md p-4 h-full bg-white shadow-sm">
               <div className="space-y-4 w-full h-full text-sm text-gray-700">

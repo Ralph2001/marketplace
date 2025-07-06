@@ -1,12 +1,12 @@
 "use client";
 
 import Sidebar from "@/components/layout/sidebar";
-import { useAuth } from "../../context/AuthContext";
+
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import useSWRInfinite from "swr/infinite";
-import { Listing } from "../../types";
-import { MAX_PAGE_SIZE } from "../../constants/page";
+import { Listing } from "../../../types";
+import { MAX_PAGE_SIZE } from "../../../constants/page";
 import Loader from "@/components/ui/loader";
 import ItemCard from "@/components/item/item-card";
 import TopBar from "@/components/dashboard/top-bar";
@@ -19,8 +19,6 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function DashboardPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const { user, loading } = useAuth();
-  const router = useRouter();
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -30,12 +28,6 @@ export default function DashboardPage() {
     }, 400);
     return () => clearTimeout(handler);
   }, [searchTerm]);
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
-  }, [user, loading]);
 
   const getKey = useCallback(
     (pageIndex: number, previousData: Listing[]) => {
@@ -67,8 +59,6 @@ export default function DashboardPage() {
     return () => observer.disconnect();
   }, []);
 
-  if (loading || !user) return null;
-
   return (
     <div className="flex max-w-screen-xl mx-auto py-4">
       {/* Category */}
@@ -76,7 +66,7 @@ export default function DashboardPage() {
       <Sidebar />
       <main className="flex-1 flex flex-col gap-4 p-4">
         <MobileBar />
-        <hr className="md:hidden"/>
+        <hr className="md:hidden" />
         <TopBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
         {isLoading ? (
