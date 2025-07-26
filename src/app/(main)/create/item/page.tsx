@@ -239,7 +239,7 @@ export default function CreateItemFormPage() {
   };
 
   return (
-    <div className="flex max-w-screen-xl mx-auto h-full py-4">
+    <div className="flex max-w-screen-xl mx-auto h-full py-4 mt-12">
       {/* Sidebar Form */}
       <aside className="fixed  top-0 bottom-0 left-0 w-full md:w-80 bg-white  shadow-lg p-5 z-50">
         {/* Header */}

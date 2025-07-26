@@ -25,12 +25,12 @@ const listingOptions = [
     href: "/create/item",
     icon: <Package className="w-6 h-6 text-white" />,
   },
-  {
-    title: "Create Multiple Listings",
-    description: "Quickly create multiple listings at the same time.",
-    href: "/#",
-    icon: <Layers3 className="w-6 h-6 text-white" />,
-  },
+  // {
+  //   title: "Create Multiple Listings",
+  //   description: "Quickly create multiple listings at the same time.",
+  //   href: "/#",
+  //   icon: <Layers3 className="w-6 h-6 text-white" />,
+  // },
   {
     title: "Vehicle for Sale",
     description: "Sell a car, truck, or other type of vehicle.",
@@ -99,7 +99,7 @@ export default function CreateListingTypePage() {
   }
 
   return (
-    <div className="flex max-w-screen-xl mx-auto">
+    <div className="flex max-w-screen-xl mx-auto mt-12">
       {/* Sidebar */}
       <aside className="hidden md:block fixed top-0 bottom-0 left-0 w-80 bg-white shadow-lg p-5 z-50">
         {/* Header */}

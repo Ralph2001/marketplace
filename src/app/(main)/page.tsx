@@ -64,7 +64,7 @@ export default function DashboardPage() {
       {/* Category */}
 
       <Sidebar />
-      <main className="flex-1 flex flex-col gap-4 p-4">
+      <main className="flex-1 flex flex-col gap-4 p-4 mt-12">
         <MobileBar />
         <hr className="md:hidden" />
         <TopBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />

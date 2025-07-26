@@ -7,9 +7,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     const { id } = await params;
 
     const supabase = await createClient()
+
+
     const { data, error } = await supabase
         .from("listings")
-        .select("*")
+        .select("category, created_at, description, email_address, image_urls, location, price, public_id, title")
         .eq("public_id", id)
         .single();
 

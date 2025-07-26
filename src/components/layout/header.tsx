@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { User, Mail, MailCheck, Bell, BellDot } from "lucide-react";
 import { createClient } from "../../../utils/supabase/client";
 
-
 export default function Header() {
   // const { user } = useAuth();
   const router = useRouter();
@@ -23,10 +22,8 @@ export default function Header() {
 
   useEffect(() => {
     const getUserAndListen = async () => {
-   
       const { data } = await supabase.auth.getUser();
       setUser(data.user);
-
 
       const {
         data: { subscription },
@@ -37,7 +34,7 @@ export default function Header() {
       return () => subscription.unsubscribe();
     };
 
-    getUserAndListen(); 
+    getUserAndListen();
   }, []);
 
   const handleLogout = async () => {
@@ -95,7 +92,7 @@ export default function Header() {
   }, [user?.email]);
 
   return (
-    <header className="w-full bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
+    <header className="w-full bg-white shadow-sm fixed top-0 left-0 right-0 z-50 border-b border-gray-200">
       <div className="max-w-screen-xl mx-auto px-4 py-2 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="text-2xl font-bold text-blue-600">

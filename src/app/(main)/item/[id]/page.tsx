@@ -8,7 +8,7 @@ import { Listing } from "../../../../../types";
 import { getRelativeTime } from "../../../../../utils/time";
 import { createClient } from "../../../../../utils/supabase/client";
 
-import { User } from "lucide-react";
+import { Map, User } from "lucide-react";
 import { CATEGORIES } from "../../../../../constants/categories";
 import ImageGallery from "@/components/ImageGallery";
 import MessageSeller from "@/components/item/message-sellert";
@@ -99,7 +99,7 @@ export default function ItemDetailPage() {
   }
 
   return (
-    <main className="flex-1 bg-gray-50 p-4 max-w-screen-2xl mx-auto">
+    <main className="flex-1 mt-12 bg-gray-50 p-4 max-w-screen-2xl mx-auto">
       <div className="flex flex-col md:flex-row gap-4 md:h-[calc(100vh-5rem)]">
         <ImageGallery
           images={listing.image_urls}
@@ -164,6 +164,10 @@ export default function ItemDetailPage() {
                 {listing.location || "No location given"}
               </p>
               <p className="text-xs text-gray-500">Location is approximate</p>
+            </div>
+
+            <div className="w-full bg-blue-400 hover:bg-blue-500 transition-all duration-300  cursor-pointer rounded-xl h-26 flex justify-center items-center">
+              <Map size={24} className="text-white" />
             </div>
 
             <hr className="border-gray-300" />

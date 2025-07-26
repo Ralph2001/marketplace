@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     const supabase = await createClient()
     const { data, error } = await supabase
         .from("listings")
-        .select("*")
+        .select("public_id, title, price, description, category, image_urls, location, created_at")
         .order("created_at", { ascending: false });
 
     if (error) {

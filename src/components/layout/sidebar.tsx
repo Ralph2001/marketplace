@@ -22,7 +22,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-full hidden md:block md:w-64 border-r border-gray-200 bg-white sticky top-16 p-4 h-auto shadow-sm text-sm">
+    <aside className="w-full hidden md:block md:w-64 border-r mt-12 border-gray-200 bg-white sticky top-16 p-4 h-auto shadow-sm text-sm">
       {/* Create Listing */}
       <div className="mb-6">
         <Link
